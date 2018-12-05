@@ -1,4 +1,4 @@
-main: com.cavetale.serverstatus.ServerStatusPlugin
+main: com.winthier.serverstatus.ServerStatusPlugin
 name: ServerStatus
 version: 0.1
 api-version: 1.13
@@ -9,12 +9,11 @@ depend: []
 softdepend: []
 commands:
   serverstatus:
-    description: ServerStatus Command
+    description: Debug interface
     permission: serverstatus.serverstatus
-    permission-message: You do not have permission!
-    usage: /<command>
+    usage: |-
+      /serverstatus load|save|update
+      /serverstatus on|off <server>
 permissions:
   serverstatus.serverstatus:
     description: Use /serverstatus
-    children:
-      serverstatus.child: true
