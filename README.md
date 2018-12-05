@@ -1,0 +1,3 @@
+# ServerStatus
+
+ServerStatus plugin.
