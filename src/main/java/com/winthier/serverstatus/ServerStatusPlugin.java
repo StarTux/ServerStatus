@@ -3,7 +3,6 @@ package com.winthier.serverstatus;
 import com.winthier.connect.Connect;
 import com.winthier.connect.event.ConnectRemoteConnectEvent;
 import com.winthier.connect.event.ConnectRemoteDisconnectEvent;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class ServerStatusPlugin extends JavaPlugin implements Listener {
+public final class ServerStatusPlugin extends JavaPlugin implements Listener {
     private final Map<String, ServerConfiguration> servers;
 
     public ServerStatusPlugin() {
@@ -81,8 +80,7 @@ public class ServerStatusPlugin extends JavaPlugin implements Listener {
                     this.servers.put(s, serverConfiguration);
                 }
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
