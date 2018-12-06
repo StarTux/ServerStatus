@@ -3,12 +3,16 @@ package com.winthier.serverstatus;
 import com.winthier.connect.Connect;
 import com.winthier.connect.event.ConnectRemoteConnectEvent;
 import com.winthier.connect.event.ConnectRemoteDisconnectEvent;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -27,6 +31,7 @@ public final class ServerStatusPlugin extends JavaPlugin implements Listener {
         this.loadConfiguration();
         this.updateServers();
         this.getServer().getPluginManager().registerEvents((Listener)this, (Plugin)this);
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
     }
 
     @Override
@@ -121,6 +126,19 @@ public final class ServerStatusPlugin extends JavaPlugin implements Listener {
             return;
         }
         serverConfiguration.turnOn();
+        if (event.getRemote().equals("cavetale")) {
+            for (Player player: getServer().getOnlinePlayers()) {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+                try {
+                    dataOutputStream.writeUTF("Connect");
+                    dataOutputStream.writeUTF("cavetale");
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+                player.sendPluginMessage(this, "BungeeCord", byteArrayOutputStream.toByteArray());
+            }
+        }
     }
 
     @EventHandler
