@@ -6,6 +6,8 @@ import com.winthier.connect.event.ConnectRemoteDisconnectEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +17,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public final class ServerStatusPlugin extends JavaPlugin implements Listener {
     private final Map<String, ServerConfiguration> servers;
@@ -30,7 +32,7 @@ public final class ServerStatusPlugin extends JavaPlugin implements Listener {
         this.saveDefaultConfig();
         this.loadConfiguration();
         this.updateServers();
-        this.getServer().getPluginManager().registerEvents((Listener)this, (Plugin)this);
+        this.getServer().getPluginManager().registerEvents(this, this);
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
     }
 
@@ -127,18 +129,33 @@ public final class ServerStatusPlugin extends JavaPlugin implements Listener {
         }
         serverConfiguration.turnOn();
         if (event.getRemote().equals("cavetale")) {
-            for (Player player: getServer().getOnlinePlayers()) {
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-                try {
-                    dataOutputStream.writeUTF("Connect");
-                    dataOutputStream.writeUTF("cavetale");
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
+            List<Player> players = new ArrayList<>(getServer().getOnlinePlayers());
+            if (players.isEmpty()) return;
+            Collections.shuffle(players);
+            new BukkitRunnable() {
+                @Override public void run() {
+                    if (players.isEmpty()) {
+                        cancel();
+                        return;
+                    }
+                    Player player = players.remove(players.size() - 1);
+                    if (!player.isOnline()) return;
+                    sendPlayerServer(player, "cavetale");
                 }
-                player.sendPluginMessage(this, "BungeeCord", byteArrayOutputStream.toByteArray());
-            }
+            }.runTaskTimer(this, 100L, 10L);
         }
+    }
+
+    void sendPlayerServer(Player player, String serverName) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+        try {
+            dataOutputStream.writeUTF("Connect");
+            dataOutputStream.writeUTF(serverName);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+        player.sendPluginMessage(this, "BungeeCord", byteArrayOutputStream.toByteArray());
     }
 
     @EventHandler
