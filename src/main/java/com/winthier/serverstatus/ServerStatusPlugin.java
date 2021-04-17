@@ -142,7 +142,7 @@ public final class ServerStatusPlugin extends JavaPlugin implements Listener {
                     if (!player.isOnline()) return;
                     sendPlayerServer(player, "cavetale");
                 }
-            }.runTaskTimer(this, 100L, 10L);
+            }.runTaskTimer(this, 200L, 20L);
         }
     }
 
